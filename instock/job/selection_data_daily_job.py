@@ -1,9 +1,9 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-
+#综合选股数据
 
 import logging
-import pandas as pd
+
 import os.path
 import sys
 
@@ -22,7 +22,6 @@ __date__ = '2023/5/5 '
 def save_nph_stock_selection_data(date, before=True):
     if before:
         return
-
     try:
         data = stf.fetch_stock_selection()
         if data is None:

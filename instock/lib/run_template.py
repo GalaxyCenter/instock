@@ -37,10 +37,11 @@ def run_with_args(run_fun, *args):
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 for date in dates:
-                    tmp_year, tmp_month, tmp_day = date.split("-")
-                    run_date = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day)).date()
-                    if trd.is_trade_date(run_date):
-                        executor.submit(run_fun, run_date, *args)
+                    #tmp_year, tmp_month, tmp_day = date.split("-")
+                    #run_date = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day)).date()
+                    if trd.is_trade_date(date):
+                        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+                        executor.submit(run_fun, date, *args)
                         time.sleep(2)
         except Exception as e:
             logging.error(f"run_template.run_with_args处理异常：{run_fun}{sys.argv}{e}")
@@ -56,3 +57,4 @@ def run_with_args(run_fun, *args):
                 run_fun(run_date_nph, *args)
         except Exception as e:
             logging.error(f"run_template.run_with_args处理异常：{run_fun}{sys.argv}{e}")
+

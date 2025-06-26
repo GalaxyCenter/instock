@@ -13,7 +13,9 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+from instock.core.crawling.stock_hist_em import redis_cache
 
+@redis_cache
 def stock_lhb_detail_daily_sina(date: str = "20240222") -> pd.DataFrame:
     """
     龙虎榜-每日详情
@@ -55,7 +57,7 @@ def stock_lhb_detail_daily_sina(date: str = "20240222") -> pd.DataFrame:
     big_df["成交额"] = pd.to_numeric(big_df["成交额"], errors="coerce")
     return big_df
 
-
+@redis_cache
 def _find_last_page(
     url: str = "https://vip.stock.finance.sina.com.cn/q/go.php/vLHBData/kind/ggtj/index.phtml",
     recent_day: str = "60",
@@ -86,7 +88,7 @@ def _find_last_page(
                 break
     return previous_page
 
-
+@redis_cache
 def stock_lhb_ggtj_sina(symbol: str = "5") -> pd.DataFrame:
     """
     龙虎榜-个股上榜统计
@@ -122,7 +124,7 @@ def stock_lhb_ggtj_sina(symbol: str = "5") -> pd.DataFrame:
     ]
     return big_df
 
-
+@redis_cache
 def stock_lhb_yytj_sina(symbol: str = "5") -> pd.DataFrame:
     """
     龙虎榜-营业部上榜统计
@@ -159,7 +161,7 @@ def stock_lhb_yytj_sina(symbol: str = "5") -> pd.DataFrame:
     big_df["卖出席位数"] = pd.to_numeric(big_df["卖出席位数"], errors="coerce")
     return big_df
 
-
+@redis_cache
 def stock_lhb_jgzz_sina(symbol: str = "5") -> pd.DataFrame:
     """
     龙虎榜-机构席位追踪
@@ -200,7 +202,7 @@ def stock_lhb_jgzz_sina(symbol: str = "5") -> pd.DataFrame:
     big_df["卖出次数"] = pd.to_numeric(big_df["卖出次数"], errors="coerce")
     return big_df
 
-
+@redis_cache
 def stock_lhb_jgmx_sina() -> pd.DataFrame:
     """
     龙虎榜-机构席位成交明细

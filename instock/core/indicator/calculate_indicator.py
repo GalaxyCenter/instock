@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import datetime
+
 import pandas as pd
 import numpy as np
 import talib as tl
@@ -14,6 +16,7 @@ def get_indicators(data, end_date=None, threshold=120, calc_threshold=None):
     try:
         isCopy = False
         if end_date is not None:
+            end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
             mask = (data['date'] <= end_date)
             data = data.loc[mask]
             isCopy = True

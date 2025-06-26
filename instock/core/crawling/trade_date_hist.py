@@ -10,6 +10,7 @@ import datetime
 import pandas as pd
 import requests
 from py_mini_racer import MiniRacer
+from instock.core.crawling.stock_hist_em import redis_cache
 
 hk_js_decode = """
 function d(t) {
@@ -301,7 +302,7 @@ function d(t) {
 }
 """
 
-
+@redis_cache
 def tool_trade_date_hist_sina() -> pd.DataFrame:
     """
     交易日历-历史数据

@@ -4,6 +4,8 @@
 
 import logging
 import concurrent.futures
+from datetime import date
+
 import pandas as pd
 import os.path
 import sys

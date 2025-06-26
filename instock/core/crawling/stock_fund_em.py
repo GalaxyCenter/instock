@@ -16,7 +16,10 @@ import requests
 __author__ = 'myh '
 __date__ = '2023/6/12 '
 
+from instock.core.crawling.stock_hist_em import redis_cache
 
+
+@redis_cache
 def stock_individual_fund_flow_rank(indicator: str = "5日") -> pd.DataFrame:
     """
     东方财富网-数据中心-资金流向-排名
@@ -60,6 +63,7 @@ def stock_individual_fund_flow_rank(indicator: str = "5日") -> pd.DataFrame:
         "fields": indicator_map[indicator][1],
     }
     r = requests.get(url, params=params)
+    time.sleep(0.3)
     data_json = r.json()
     data = data_json["data"]["diff"]
     data_count = data_json["data"]["total"]
@@ -234,7 +238,7 @@ def stock_individual_fund_flow_rank(indicator: str = "5日") -> pd.DataFrame:
         # temp_df['最新价'] = pd.to_numeric(temp_df['最新价'], errors="coerce").fillna(0)
     return temp_df
 
-
+@redis_cache
 def stock_sector_fund_flow_rank(
     indicator: str = "10日", sector_type: str = "行业资金流"
 ) -> pd.DataFrame:

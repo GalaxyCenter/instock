@@ -2,14 +2,17 @@
 # -*- coding:utf-8 -*-
 """
 Date: 2022/6/19 15:26
-Desc: 东方财富网-行情首页-沪深京 A 股
+Desc: 东方财富网-行情首页-沪深京 A 股（添加Redis缓存支持）
 """
+import time
 import requests
 import pandas as pd
 import math
-from functools import lru_cache
+import instock.lib.database as mdb
+from instock.core.cache import redis_cache
 
 
+@redis_cache
 def stock_zh_a_spot_em() -> pd.DataFrame:
     """
     东方财富网-沪深京 A 股-实时行情
@@ -33,6 +36,7 @@ def stock_zh_a_spot_em() -> pd.DataFrame:
         "fields": "f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f14,f15,f16,f17,f18,f20,f21,f22,f23,f24,f25,f26,f37,f38,f39,f40,f41,f45,f46,f48,f49,f57,f61,f100,f112,f113,f114,f115,f221",
         "_": "1623833739532",
     }
+    time.sleep(0.5)
     r = requests.get(url, params=params)
     data_json = r.json()
     data = data_json["data"]["diff"]
@@ -44,11 +48,12 @@ def stock_zh_a_spot_em() -> pd.DataFrame:
     while page_count > 1:
         page_current = page_current + 1
         params["pn"] = page_current
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         _data = data_json["data"]["diff"]
         data.extend(_data)
-        page_count =page_count - 1
+        page_count = page_count - 1
 
     temp_df = pd.DataFrame(data)
     temp_df.columns = [
@@ -178,7 +183,7 @@ def stock_zh_a_spot_em() -> pd.DataFrame:
     return temp_df
 
 
-@lru_cache()
+@redis_cache
 def code_id_map_em() -> dict:
     """
     东方财富-股票和市场代码
@@ -202,6 +207,7 @@ def code_id_map_em() -> dict:
         "fields": "f12",
         "_": "1623833739532",
     }
+    time.sleep(0.5)
     r = requests.get(url, params=params)
     data_json = r.json()
     data = data_json["data"]["diff"]
@@ -213,11 +219,12 @@ def code_id_map_em() -> dict:
     while page_count > 1:
         page_current = page_current + 1
         params["pn"] = page_current
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         _data = data_json["data"]["diff"]
         data.extend(_data)
-        page_count =page_count - 1
+        page_count = page_count - 1
 
     temp_df = pd.DataFrame(data)
     temp_df["market_id"] = 1
@@ -237,6 +244,7 @@ def code_id_map_em() -> dict:
         "fields": "f12",
         "_": "1623833739532",
     }
+    time.sleep(0.5)
     r = requests.get(url, params=params)
     data_json = r.json()
     data = data_json["data"]["diff"]
@@ -248,11 +256,12 @@ def code_id_map_em() -> dict:
     while page_count > 1:
         page_current = page_current + 1
         params["pn"] = page_current
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         _data = data_json["data"]["diff"]
         data.extend(_data)
-        page_count =page_count - 1
+        page_count = page_count - 1
 
     temp_df_sz = pd.DataFrame(data)
     temp_df_sz["sz_id"] = 0
@@ -271,6 +280,7 @@ def code_id_map_em() -> dict:
         "fields": "f12",
         "_": "1623833739532",
     }
+    time.sleep(0.5)
     r = requests.get(url, params=params)
     data_json = r.json()
     data = data_json["data"]["diff"]
@@ -282,11 +292,12 @@ def code_id_map_em() -> dict:
     while page_count > 1:
         page_current = page_current + 1
         params["pn"] = page_current
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         _data = data_json["data"]["diff"]
         data.extend(_data)
-        page_count =page_count - 1
+        page_count = page_count - 1
 
     temp_df_sz = pd.DataFrame(data)
     temp_df_sz["bj_id"] = 0
@@ -294,12 +305,13 @@ def code_id_map_em() -> dict:
     return code_id_dict
 
 
+@redis_cache
 def stock_zh_a_hist(
-    symbol: str = "000001",
-    period: str = "daily",
-    start_date: str = "19700101",
-    end_date: str = "20500101",
-    adjust: str = "",
+        symbol: str = "000001",
+        period: str = "daily",
+        start_date: str = "19700101",
+        end_date: str = "20500101",
+        adjust: str = "",
 ) -> pd.DataFrame:
     """
     东方财富网-行情首页-沪深京 A 股-每日行情
@@ -333,6 +345,7 @@ def stock_zh_a_hist(
         "_": "1623766962675",
     }
     r = requests.get(url, params=params)
+    time.sleep(0.3)
     data_json = r.json()
     if not (data_json["data"] and data_json["data"]["klines"]):
         return pd.DataFrame()
@@ -369,12 +382,80 @@ def stock_zh_a_hist(
     return temp_df
 
 
+def stock_zh_a_hist_from_db(
+        symbol: str = "000001",
+        period: str = "daily",
+        start_date: str = "19700101",
+        end_date: str = "20500101",
+        adjust: str = "",
+) -> pd.DataFrame:
+    """
+    从数据库获取沪深京 A 股每日行情数据（仅支持 daily）。
+
+    :param symbol: 股票代码
+    :type symbol: str
+    :param period: 固定为 'daily'
+    :type period: str
+    :param start_date: 开始日期 (格式：YYYYMMDD)
+    :type start_date: str
+    :param end_date: 结束日期 (格式：YYYYMMDD)
+    :type end_date: str
+    :param adjust: choice of {"qfq": "前复权", "hfq": "后复权", "": "不复权"}
+    :type adjust: str
+    :return: 每日行情 DataFrame
+    :rtype: pandas.DataFrame
+    """
+
+    if period != "daily":
+        raise ValueError("Only 'daily' period is supported in this function.")
+
+    # 固定使用日线表
+    #table_name = "stock_trade_day_00"
+    prefix = symbol[:2]
+    table_name = f"stock_trade_day_{prefix}"
+
+    # 构建 SQL 查询语句
+    sql = f"""SELECT `date` AS 日期, `open` AS 开盘, `close` AS 收盘, `high` AS 最高, `low` AS 最低, `volume` AS 成交量, `amount` AS 成交额
+    FROM {table_name}
+    WHERE `code` = '{symbol}' 
+        AND `date` BETWEEN STR_TO_DATE('{start_date}', '%%Y%%m%%d') 
+                         AND STR_TO_DATE('{end_date}', '%%Y%%m%%d')
+    ORDER BY `date` ASC"""
+
+    # 执行查询并转换为 DataFrame
+    result = mdb.executeSqlFetch(sql)
+    if not result:
+        return pd.DataFrame()
+
+    temp_df = pd.DataFrame(result, columns=["日期", "开盘", "收盘", "最高", "最低", "成交量", "成交额"])
+
+    # 添加其他字段（如果数据库中没有）
+    temp_df["振幅"] = ((temp_df["最高"] - temp_df["最低"]) / temp_df["最低"] * 100).round(2)
+    temp_df["涨跌幅"] = ((temp_df["收盘"] - temp_df["开盘"]) / temp_df["开盘"] * 100).round(2)
+    temp_df["涨跌额"] = (temp_df["收盘"] - temp_df["开盘"]).round(2)
+    temp_df["换手率"] = 0.0  # 如果数据库中没有换手率字段
+
+    # 设置索引
+    temp_df.index = pd.to_datetime(temp_df["日期"])
+    temp_df.reset_index(inplace=True, drop=True)
+
+    # 转换数值类型为 float
+    numeric_columns = [
+        "开盘", "收盘", "最高", "最低", "成交量", "成交额", "振幅", "涨跌幅", "涨跌额", "换手率"
+    ]
+    for col in numeric_columns:
+        temp_df[col] = pd.to_numeric(temp_df[col], errors="coerce")
+
+    return temp_df
+
+
+@redis_cache
 def stock_zh_a_hist_min_em(
-    symbol: str = "000001",
-    start_date: str = "1979-09-01 09:32:00",
-    end_date: str = "2222-01-01 09:32:00",
-    period: str = "5",
-    adjust: str = "",
+        symbol: str = "000001",
+        start_date: str = "1979-09-01 09:32:00",
+        end_date: str = "2222-01-01 09:32:00",
+        period: str = "5",
+        adjust: str = "",
 ) -> pd.DataFrame:
     """
     东方财富网-行情首页-沪深京 A 股-每日分时行情
@@ -409,6 +490,7 @@ def stock_zh_a_hist_min_em(
             "secid": f"{code_id_dict[symbol]}.{symbol}",
             "_": "1623766962675",
         }
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         temp_df = pd.DataFrame(
@@ -449,6 +531,7 @@ def stock_zh_a_hist_min_em(
             "end": "20500000",
             "_": "1630930917857",
         }
+        time.sleep(0.5)
         r = requests.get(url, params=params)
         data_json = r.json()
         temp_df = pd.DataFrame(
@@ -499,10 +582,11 @@ def stock_zh_a_hist_min_em(
         return temp_df
 
 
+@redis_cache
 def stock_zh_a_hist_pre_min_em(
-    symbol: str = "000001",
-    start_time: str = "09:00:00",
-    end_time: str = "15:50:00",
+        symbol: str = "000001",
+        start_time: str = "09:00:00",
+        end_time: str = "15:50:00",
 ) -> pd.DataFrame:
     """
     东方财富网-行情首页-沪深京 A 股-每日分时行情包含盘前数据
@@ -528,6 +612,7 @@ def stock_zh_a_hist_pre_min_em(
         "secid": f"{code_id_dict[symbol]}.{symbol}",
         "_": "1623766962675",
     }
+    time.sleep(0.5)
     r = requests.get(url, params=params)
     data_json = r.json()
     temp_df = pd.DataFrame(
@@ -546,8 +631,8 @@ def stock_zh_a_hist_pre_min_em(
     temp_df.index = pd.to_datetime(temp_df["时间"])
     date_format = temp_df.index[0].date().isoformat()
     temp_df = temp_df[
-        date_format + " " + start_time : date_format + " " + end_time
-    ]
+              date_format + " " + start_time : date_format + " " + end_time
+              ]
     temp_df.reset_index(drop=True, inplace=True)
     temp_df["开盘"] = pd.to_numeric(temp_df["开盘"])
     temp_df["收盘"] = pd.to_numeric(temp_df["收盘"])
@@ -561,6 +646,10 @@ def stock_zh_a_hist_pre_min_em(
 
 
 if __name__ == "__main__":
+    # 设置Redis缓存配置
+    print(f"Redis缓存配置: {REDIS_CONFIG}")
+    print(f"缓存过期时间: {CACHE_EXPIRE_TIME}秒 ({CACHE_EXPIRE_TIME/3600}小时)")
+
     stock_zh_a_spot_em_df = stock_zh_a_spot_em()
     print(stock_zh_a_spot_em_df)
 
@@ -598,4 +687,3 @@ if __name__ == "__main__":
         adjust="hfq",
     )
     print(stock_zh_a_hist_df)
-

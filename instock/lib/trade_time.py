@@ -18,6 +18,7 @@ def is_trade_date(date=None):
         return False
 
 
+# 获取删一个交易日的日期
 def get_previous_trade_date(date):
     trade_date = stock_trade_date().get_data()
     if trade_date is None:
@@ -25,11 +26,12 @@ def get_previous_trade_date(date):
     tmp_date = date
     while True:
         tmp_date += datetime.timedelta(days=-1)
-        if tmp_date in trade_date:
+        if tmp_date.strftime('%Y-%m-%d') in trade_date:
             break
     return tmp_date
 
 
+#获取下一个交易日的日期
 def get_next_trade_date(date):
     trade_date = stock_trade_date().get_data()
     if trade_date is None:
@@ -37,7 +39,7 @@ def get_next_trade_date(date):
     tmp_date = date
     while True:
         tmp_date += datetime.timedelta(days=1)
-        if tmp_date in trade_date:
+        if tmp_date.strftime('%Y-%m-%d') in trade_date:
             break
     return tmp_date
 

@@ -20,12 +20,13 @@ import instock.core.crawling.stock_fund_em as sff
 import instock.core.crawling.stock_fhps_em as sfe
 import instock.core.crawling.stock_chip_race as scr
 import instock.core.crawling.stock_limitup_reason as slr
+from instock.core.crawling.stock_hist_em import redis_cache
 
 __author__ = 'myh '
 __date__ = '2023/3/10 '
 
 # 设置基础目录，每次加载使用。
-cpath_current = os.path.dirname(os.path.dirname(__file__))
+cpath_current = "z:\\" #os.path.dirname(os.path.dirname(__file__))
 stock_hist_cache_path = os.path.join(cpath_current, 'cache', 'hist')
 if not os.path.exists(stock_hist_cache_path):
     os.makedirs(stock_hist_cache_path)  # 创建多个文件夹结构。
@@ -40,6 +41,7 @@ if not os.path.exists(stock_hist_cache_path):
 # 200开头的股票是深证B股；
 # 300、301开头的股票是创业板股票；400开头的股票是三板市场股票。
 # 430、83、87开头的股票是北证A股
+@redis_cache
 def is_a_stock(code):
     # 上证A股  # 深证A股
     return code.startswith(('600', '601', '603', '605', '000', '001', '002', '003', '300', '301'))
@@ -107,7 +109,7 @@ def fetch_stocks(date):
         logging.error(f"stockfetch.fetch_stocks处理异常：{e}")
     return None
 
-
+@redis_cache
 def fetch_stock_selection():
     try:
         data = sst.stock_selection()
@@ -281,6 +283,7 @@ def fetch_stock_chip_race_end(date):
     return None
 
 # 读取涨停原因
+@redis_cache
 def fetch_stock_limitup_reason(date):
 
     try:
@@ -294,6 +297,7 @@ def fetch_stock_limitup_reason(date):
     return None
 
 # 读取股票历史数据
+@redis_cache
 def fetch_etf_hist(data_base, date_start=None, date_end=None, adjust='qfq'):
     date = data_base[0]
     code = data_base[1]
@@ -357,10 +361,10 @@ def stock_hist_cache(code, date_start, date_end=None, is_cache=True, adjust=''):
             return pd.read_pickle(cache_file, compression="gzip")
         else:
             if date_end is not None:
-                stock = she.stock_zh_a_hist(symbol=code, period="daily", start_date=date_start, end_date=date_end,
+                stock = she.stock_zh_a_hist_from_db(symbol=code, period="daily", start_date=date_start, end_date=date_end,
                                             adjust=adjust)
             else:
-                stock = she.stock_zh_a_hist(symbol=code, period="daily", start_date=date_start, adjust=adjust)
+                stock = she.stock_zh_a_hist_from_db(symbol=code, period="daily", start_date=date_start, adjust=adjust)
 
             if stock is None or len(stock.index) == 0:
                 return None
