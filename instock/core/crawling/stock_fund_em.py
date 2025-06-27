@@ -78,6 +78,7 @@ def stock_individual_fund_flow_rank(indicator: str = "5日") -> pd.DataFrame:
         page_count =page_count - 1
 
     temp_df = pd.DataFrame(data)
+    temp_df = temp_df.drop_duplicates()
     temp_df = temp_df[~temp_df["f2"].isin(["-"])]
     if indicator == "今日":
         temp_df.columns = [
