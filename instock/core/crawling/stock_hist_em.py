@@ -9,7 +9,7 @@ import requests
 import pandas as pd
 import math
 import instock.lib.database as mdb
-from instock.core.cache import redis_cache
+from instock.core.cache import redis_cache, REDIS_CONFIG, CACHE_EXPIRE_TIME
 
 
 @redis_cache
@@ -415,7 +415,7 @@ def stock_zh_a_hist_from_db(
     table_name = f"stock_trade_day_{prefix}"
 
     # 构建 SQL 查询语句
-    sql = f"""SELECT `date` AS 日期, `open` AS 开盘, `close` AS 收盘, `high` AS 最高, `low` AS 最低, `volume` AS 成交量, `amount` AS 成交额
+    sql = f"""SELECT DATE_FORMAT(`date`, '%%Y-%%m-%%d')  AS 日期, `open` AS 开盘, `close` AS 收盘, `high` AS 最高, `low` AS 最低, `volume` AS 成交量, `amount` AS 成交额
     FROM {table_name}
     WHERE `code` = '{symbol}' 
         AND `date` BETWEEN STR_TO_DATE('{start_date}', '%%Y%%m%%d') 

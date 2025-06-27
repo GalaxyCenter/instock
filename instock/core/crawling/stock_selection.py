@@ -11,7 +11,10 @@ import instock.core.tablestructure as tbs
 __author__ = 'myh '
 __date__ = '2023/5/9 '
 
+from instock.core.cache import redis_cache
 
+
+@redis_cache
 def stock_selection() -> pd.DataFrame:
     """
     东方财富网-个股-选股器

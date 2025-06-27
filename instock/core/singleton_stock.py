@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
 import concurrent.futures
+import logging
+
+import pandas as pd
+
 import instock.core.stockfetch as stf
 import instock.core.tablestructure as tbs
+import instock.lib.database as mdb
 import instock.lib.trade_time as trd
-from instock.core.crawling.stock_hist_em import redis_cache
 from instock.lib.singleton_type import singleton_type
+from collections import defaultdict
 
 __author__ = 'myh '
 __date__ = '2023/3/10 '
@@ -27,7 +31,7 @@ class stock_data(metaclass=singleton_type):
 
 # 读取股票历史数据
 class stock_hist_data(metaclass=singleton_type):
-    def __init__(self, date=None, stocks=None, workers=16):
+    def __init__(self, date=None, stocks=None, workers=64):
         if stocks is None:
             _subset = stock_data(date).get_data()[list(tbs.TABLE_CN_STOCK_FOREIGN_KEY['columns'])]
             stocks = [tuple(x) for x in _subset.values]
@@ -38,7 +42,7 @@ class stock_hist_data(metaclass=singleton_type):
         _data = {}
         try:
             # max_workers是None还是没有给出，将默认为机器cup个数*5
-            #stocks = stocks[:100]
+            #stocks = stocks[:3]
             with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
                 future_to_stock = {executor.submit(stf.fetch_stock_hist, stock, date_start, is_cache): stock for stock
                                    in stocks}

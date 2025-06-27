@@ -4,6 +4,8 @@
 import logging
 import os.path
 import datetime
+import traceback
+
 import numpy as np
 import pandas as pd
 import talib as tl
@@ -109,7 +111,7 @@ def fetch_stocks(date):
         logging.error(f"stockfetch.fetch_stocks处理异常：{e}")
     return None
 
-@redis_cache
+
 def fetch_stock_selection():
     try:
         data = sst.stock_selection()
@@ -135,6 +137,7 @@ def fetch_stocks_fund_flow(index):
         return data
     except Exception as e:
         logging.error(f"stockfetch.fetch_stocks_fund_flow处理异常：{e}")
+        logging.error(traceback.format_exc())
     return None
 
 

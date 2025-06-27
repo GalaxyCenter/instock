@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import concurrent.futures
-import pandas as pd
+import logging
 import os.path
 import sys
+
+import pandas as pd
 
 cpath_current = os.path.dirname(os.path.dirname(__file__))
 cpath = os.path.abspath(os.path.join(cpath_current, os.pardir))
