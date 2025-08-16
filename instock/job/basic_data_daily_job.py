@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-#基础数据实时作业
+#基础数据实时作业(早盘强筹数据\每日ETF数据)
 import logging
 import os.path
 import sys
@@ -69,7 +69,9 @@ def save_nph_etf_spot_data(date, before=True):
 
 
 def main():
+    # 早盘抢筹数据
     runt.run_with_args(save_nph_stock_spot_data)
+    # 每日ETF数据
     runt.run_with_args(save_nph_etf_spot_data)
 
 
