@@ -31,7 +31,7 @@ class stock_data(metaclass=singleton_type):
 
 # 读取股票历史数据
 class stock_hist_data(metaclass=singleton_type):
-    def __init__(self, date=None, stocks=None, workers=64):
+    def __init__(self, date=None, stocks=None, workers=128):
         if stocks is None:
             _subset = stock_data(date).get_data()[list(tbs.TABLE_CN_STOCK_FOREIGN_KEY['columns'])]
             stocks = [tuple(x) for x in _subset.values]
@@ -42,7 +42,7 @@ class stock_hist_data(metaclass=singleton_type):
         _data = {}
         try:
             # max_workers是None还是没有给出，将默认为机器cup个数*5
-            #stocks = stocks[:3]
+            #stocks = stocks[:500]
             with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
                 future_to_stock = {executor.submit(stf.fetch_stock_hist, stock, date_start, is_cache): stock for stock
                                    in stocks}
