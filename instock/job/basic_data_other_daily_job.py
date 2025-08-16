@@ -21,9 +21,7 @@ __date__ = '2023/3/10 '
 
 # 每日股票龙虎榜
 def save_nph_stock_top_data(date, before=True):
-    if before:
-        return
-
+    print("每日股票龙虎榜", date)
     try:
         data = stf.fetch_stock_top_data(date)
         if data is None or len(data.index) == 0:
@@ -45,9 +43,7 @@ def save_nph_stock_top_data(date, before=True):
 
 # 每日股票资金流向
 def save_nph_stock_fund_flow_data(date, before=True):
-    if before:
-        return
-
+    print("每日股票资金流向", date)
     try:
         times = tuple(range(4))
         results = run_check_stock_fund_flow(times)
@@ -110,11 +106,9 @@ def run_check_stock_fund_flow(times):
         return data
 
 
-# 每日行业资金流向
+# 每日行业资金流向(行业资金、概念资金)
 def save_nph_stock_sector_fund_flow_data(date, before=True):
-    if before:
-        return
-
+    print("每日行业资金流向", date)
     # times = tuple(range(2))
     # with concurrent.futures.ThreadPoolExecutor(max_workers=len(times)) as executor:
     #     {executor.submit(stock_sector_fund_flow_data, date, k): k for k in times}
@@ -182,9 +176,7 @@ def run_check_stock_sector_fund_flow(index_sector, times):
 
 # 每日股票分红配送
 def save_nph_stock_bonus(date, before=True):
-    if before:
-        return
-
+    print("每日股票分红配送", date)
     try:
         data = stf.fetch_stocks_bonus(date)
         if data is None or len(data.index) == 0:
@@ -205,6 +197,7 @@ def save_nph_stock_bonus(date, before=True):
 
 # 基本面选股
 def stock_spot_buy(date):
+    print("基本面选股", date)
     try:
         _table_name = tbs.TABLE_CN_STOCK_SPOT['name']
         if not mdb.checkTableIsExist(_table_name):
@@ -215,6 +208,7 @@ def stock_spot_buy(date):
         data = pd.read_sql(sql=sql, con=mdb.engine())
         data = data.drop_duplicates(subset="code", keep="last")
         if len(data.index) == 0:
+            print('基本面选股-无符合数据')
             return
 
         table_name = tbs.TABLE_CN_STOCK_SPOT_BUY['name']
@@ -233,6 +227,7 @@ def stock_spot_buy(date):
 
 # 每日早盘抢筹
 def stock_chip_race_open_data(date):
+    print("每日早盘抢筹", date)
     try:
         data = stf.fetch_stock_chip_race_open(date)
         if data is None or len(data.index) == 0:
@@ -254,6 +249,7 @@ def stock_chip_race_open_data(date):
 
 # 每日涨停原因
 def stock_imitup_reason_data(date):
+    print('每日涨停原因', date)
     try:
         data = stf.fetch_stock_limitup_reason(date)
         if data is None or len(data.index) == 0:
@@ -273,11 +269,17 @@ def stock_imitup_reason_data(date):
         logging.error(f"basic_data_other_daily_job.stock_imitup_reason_data：{e}")
 
 def main():
+    # 每日股票龙虎榜\基本面选股
     runt.run_with_args(save_nph_stock_top_data)
+    # 每日股票分红配送
     runt.run_with_args(save_nph_stock_bonus)
+    # 每日股票资金流向
     runt.run_with_args(save_nph_stock_fund_flow_data)
+    # 每日行业资金流向
     runt.run_with_args(save_nph_stock_sector_fund_flow_data)
+    # 每日早盘抢筹
     runt.run_with_args(stock_chip_race_open_data)
+    # 每日涨停原因
     runt.run_with_args(stock_imitup_reason_data)
 
 

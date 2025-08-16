@@ -13,12 +13,13 @@ cd ..
 cd job
 
 # 执行所有 Python 脚本，并传入日期参数
+#股票策略回归测试
 python backtest_data_daily_job.py "$DATE"
-#基础数据收盘2小时后作业
+#每日股票大宗交易 每日尾盘抢筹
 python basic_data_after_close_daily_job.py "$DATE"
 #基础数据实时作业(早盘强筹数据\每日ETF数据)
 python basic_data_daily_job.py "$DATE"
-#基础数据非实时作业
+#股票基本数据(每日股票龙虎榜\基本面选股\每日股票分红配送\每日股票资金流向\每日行业资金流向(行业资金、概念资金)\每日早盘抢筹\每日涨停原因)
 python basic_data_other_daily_job.py "$DATE"
 #指标数据作业
 python indicators_data_daily_job.py "$DATE"

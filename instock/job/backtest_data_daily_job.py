@@ -21,7 +21,7 @@ __author__ = 'myh '
 __date__ = '2023/3/10 '
 
 
-# 股票策略回归测试。
+# 股票策略回归测试
 def prepare():
     tables = [tbs.TABLE_CN_STOCK_INDICATORS_BUY, tbs.TABLE_CN_STOCK_INDICATORS_SELL]
     tables.extend(tbs.TABLE_CN_STOCK_STRATEGIES)
