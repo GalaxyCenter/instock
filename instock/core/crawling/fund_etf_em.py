@@ -5,6 +5,7 @@ Date: 2023/1/4 12:18
 Desc: 东方财富-ETF 行情
 https://quote.eastmoney.com/sh513500.html
 """
+import time
 from functools import lru_cache
 import math
 import pandas as pd
@@ -48,6 +49,7 @@ def fund_etf_spot_em() -> pd.DataFrame:
         page_current = page_current + 1
         params["pn"] = page_current
         r = requests.get(url, params=params)
+        time.sleep(0.3)
         data_json = r.json()
         _data = data_json["data"]["diff"]
         data.extend(_data)
