@@ -3,6 +3,7 @@
 
 import logging
 import datetime
+import traceback
 
 import pandas as pd
 import numpy as np
@@ -16,7 +17,6 @@ def get_indicators(data, end_date=None, threshold=120, calc_threshold=None):
     try:
         isCopy = False
         if end_date is not None:
-            end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
             mask = (data['date'] <= end_date)
             data = data.loc[mask]
             isCopy = True
@@ -452,4 +452,5 @@ def get_indicator(code_name, data, stock_column, date=None, calc_threshold=90):
         return pd.Series(stock_data_list, index=stock_column)
     except Exception as e:
         logging.error(f"calculate_indicator.get_indicator处理异常：{code}代码{e}")
+        traceback.print_exc()
     return None
