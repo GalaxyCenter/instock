@@ -46,23 +46,31 @@ def main():
     # 第1步创建数据库
     bj.main()
     # 第2.1步创建股票基础数据表
+    logging.info("基础数据实时作业(早盘强筹数据\每日ETF数据)")
     hdj.main()
     # 第2.2步创建综合股票数据表
+    logging.info("综合选股作业")
     sddj.main()
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # # 第3.1步创建股票其它基础数据表
+        logging.info("股票基本数据(每日股票龙虎榜\基本面选股\每日股票分红配送\每日股票资金流向\每日行业资金流向(行业资金、概念资金)\每日早盘抢筹\每日涨停原因)")
         executor.submit(hdtj.main)
         # # 第3.2步创建股票指标数据表
+        logging.info("指标数据作业")
         executor.submit(gdj.main)
         # # # # 第4步创建股票k线形态表
+        logging.info("K线形态作业")
         executor.submit(kdj.main)
         # # # # 第5步创建股票策略数据表
+        logging.info("策略数据作业")
         executor.submit(sdj.main)
 
     # # # # 第6步创建股票回测
+    logging.info("股票策略回归测试")
     bdj.main()
 
     # # # # 第7步创建股票闭盘后才有的数据
+    logging.info("每日股票大宗交易 每日尾盘抢筹")
     acdj.main()
 
     logging.info("######## 完成任务, 使用时间: %s 秒 #######" % (time.time() - start))
