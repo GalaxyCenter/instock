@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-#基础数据实时作业(早盘强筹数据\每日ETF数据)
+#基础数据实时作业(股票实时行情数据\每日ETF数据)
 import logging
 import os.path
 import sys
@@ -19,12 +19,10 @@ __date__ = '2023/3/10 '
 
 
 # 股票实时行情数据。
-def save_nph_stock_spot_data(date, before=True):
-    if before:
-        return
+def save_nph_stock_spot_data():
     # 股票列表
     try:
-        data = stock_data(date).get_data()
+        data = stock_data().get_data()
         if data is None or len(data.index) == 0:
             return
 
@@ -43,13 +41,11 @@ def save_nph_stock_spot_data(date, before=True):
         logging.error(f"basic_data_daily_job.save_stock_spot_data处理异常：{e}")
 
 
-# 基金实时行情数据。
-def save_nph_etf_spot_data(date, before=True):
-    if before:
-        return
+# ETF 实时数据。
+def save_nph_etf_spot_data():
     # 股票列表
     try:
-        data = stf.fetch_etfs(date)
+        data = stf.fetch_etfs()
         if data is None or len(data.index) == 0:
             return
 
@@ -69,10 +65,10 @@ def save_nph_etf_spot_data(date, before=True):
 
 
 def main():
-    # 早盘抢筹数据
-    runt.run_with_args(save_nph_stock_spot_data)
-    # 每日ETF数据
-    runt.run_with_args(save_nph_etf_spot_data)
+    # 股票实时行情数据
+    save_nph_stock_spot_data()
+    # ETF实时行情数据
+    save_nph_etf_spot_data()
 
 
 # main函数入口

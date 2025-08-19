@@ -46,7 +46,7 @@ def main():
     # 第1步创建数据库
     bj.main()
     # 第2.1步创建股票基础数据表
-    logging.info("基础数据实时作业(早盘强筹数据\每日ETF数据)")
+    logging.info("基础数据实时作业(股票实时行情数据\每日ETF数据)")
     hdj.main()
     # 第2.2步创建综合股票数据表
     logging.info("综合选股作业")

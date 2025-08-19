@@ -13,7 +13,7 @@ cd ..
 cd job
 
 # 执行所有 Python 脚本，并传入日期参数
-echo "基础数据实时作业(早盘强筹数据\每日ETF数据)"
+echo "基础数据实时作业(股票实时行情数据\每日ETF数据)"
 python basic_data_daily_job.py "$DATE"
 echo "综合选股作业"
 python selection_data_daily_job.py "$DATE"

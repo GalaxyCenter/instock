@@ -76,16 +76,13 @@ def fetch_stocks_trade_date():
     return None
 
 
-# 读取当天股票数据
-def fetch_etfs(date):
+# ETF 实时数据
+def fetch_etfs():
     try:
         data = fee.fund_etf_spot_em()
         if data is None or len(data.index) == 0:
             return None
-        if date is None:
-            data.insert(0, 'date', datetime.datetime.now().strftime("%Y-%m-%d"))
-        else:
-            data.insert(0, 'date', date.strftime("%Y-%m-%d"))
+        data.insert(0, 'date', datetime.datetime.now().strftime("%Y-%m-%d"))
         data.columns = list(tbs.TABLE_CN_ETF_SPOT['columns'])
         data = data.loc[data['new_price'].apply(is_open)]
         return data
@@ -94,16 +91,13 @@ def fetch_etfs(date):
     return None
 
 
-# 读取当天股票数据
-def fetch_stocks(date):
+# 股票数据实时数据
+def fetch_stocks():
     try:
         data = she.stock_zh_a_spot_em()
         if data is None or len(data.index) == 0:
             return None
-        if date is None:
-            data.insert(0, 'date', datetime.datetime.now().strftime("%Y-%m-%d"))
-        else:
-            data.insert(0, 'date', date.strftime("%Y-%m-%d"))
+        data.insert(0, 'date', datetime.datetime.now().strftime("%Y-%m-%d"))
         data.columns = list(tbs.TABLE_CN_STOCK_SPOT['columns'])
         data = data.loc[data['code'].apply(is_a_stock)].loc[data['new_price'].apply(is_open)]
         return data

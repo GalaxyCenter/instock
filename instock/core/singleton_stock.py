@@ -17,11 +17,11 @@ __author__ = 'myh '
 __date__ = '2023/3/10 '
 
 
-# 读取当天股票数据
+# 股票数据实时数据
 class stock_data(metaclass=singleton_type):
-    def __init__(self, date):
+    def __init__(self):
         try:
-            self.data = stf.fetch_stocks(date)
+            self.data = stf.fetch_stocks()
         except Exception as e:
             logging.error(f"singleton.stock_data处理异常：{e}")
 

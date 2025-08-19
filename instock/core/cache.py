@@ -17,7 +17,7 @@ REDIS_CONFIG = {
 }
 
 # 缓存时间（秒），默认为1天
-CACHE_EXPIRE_TIME = 86400 * 30
+CACHE_EXPIRE_TIME = 3600
 
 # 创建Redis连接池
 redis_pool = redis.ConnectionPool(**REDIS_CONFIG)

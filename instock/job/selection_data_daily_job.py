@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-#综合选股数据
+#综合选股数据, 只有前一天的数据
 
 import logging
 
