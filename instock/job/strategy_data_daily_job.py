@@ -42,6 +42,7 @@ def prepare(date, strategy):
             cols_type = tbs.get_field_types(tbs.TABLE_CN_STOCK_STRATEGIES[0]['columns'])
 
         data = pd.DataFrame(results)
+        print(data.to_string())
         columns = tuple(tbs.TABLE_CN_STOCK_FOREIGN_KEY['columns'])
         data.columns = columns
         _columns_backtest = tuple(tbs.TABLE_CN_STOCK_BACKTEST_DATA['columns'])
@@ -86,9 +87,10 @@ def run_check(strategy_fun, table_name, stocks, date, workers=40):
 
 def main():
     # 使用方法传递。
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        for strategy in tbs.TABLE_CN_STOCK_STRATEGIES:
-            executor.submit(runt.run_with_args, prepare, strategy)
+    runt.run_with_args(prepare, tbs.TABLE_CN_STOCK_STRATEGIES[0])
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     for strategy in tbs.TABLE_CN_STOCK_STRATEGIES:
+    #         executor.submit(runt.run_with_args, prepare, strategy)
 
 
 # main函数入口

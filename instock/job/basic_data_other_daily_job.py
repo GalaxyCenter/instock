@@ -270,17 +270,17 @@ def stock_imitup_reason_data(date):
 
 def main():
     # 每日股票龙虎榜\基本面选股
-    runt.run_with_args(save_nph_stock_top_data)
+    #runt.run_with_args(save_nph_stock_top_data)
     # 每日股票分红配送
     runt.run_with_args(save_nph_stock_bonus)
     # 每日股票资金流向
-    runt.run_with_args(save_nph_stock_fund_flow_data)
+    #runt.run_with_args(save_nph_stock_fund_flow_data)
     # 每日行业资金流向
-    runt.run_with_args(save_nph_stock_sector_fund_flow_data)
+    #runt.run_with_args(save_nph_stock_sector_fund_flow_data)
     # 每日早盘抢筹
-    runt.run_with_args(stock_chip_race_open_data)
+    #runt.run_with_args(stock_chip_race_open_data)
     # 每日涨停原因
-    runt.run_with_args(stock_imitup_reason_data)
+    #runt.run_with_args(stock_imitup_reason_data)
 
 
 # main函数入口

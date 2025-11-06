@@ -46,6 +46,17 @@ def check_volume(code_name, data, date=None, threshold=60):
     if amount < 200000000:
         return False
 
+    #当日成交量 >= 前一日成交量的 2 倍
+    prev_vol = data.iloc[-2]['volume']
+    vol_ratio = last_vol / prev_vol
+    if vol_ratio < 2:
+        return False
+
+    # 过去10个交易日（不含今日）每日涨跌幅均不超过 ±5% ===
+    recent_10_days = data.iloc[-21:-1]  # 最近20天（排除最后一日）
+    if (recent_10_days['p_change'].abs() > 5.0).any():
+        return False
+
     data = data.head(n=threshold)
 
     mean_vol = data.iloc[-1]['vol_ma5']

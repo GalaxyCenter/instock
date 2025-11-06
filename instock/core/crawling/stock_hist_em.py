@@ -12,6 +12,7 @@ import instock.lib.database as mdb
 from instock.core.cache import redis_cache, REDIS_CONFIG, CACHE_EXPIRE_TIME
 
 #股票数据实时数据
+@redis_cache
 def stock_zh_a_spot_em() -> pd.DataFrame:
     """
     东方财富网-沪深京 A 股-实时行情

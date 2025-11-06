@@ -34,7 +34,8 @@ def prepare(date):
         table_name = tbs.TABLE_CN_STOCK_INDICATORS['name']
         # 删除老数据。
         if mdb.checkTableIsExist(table_name):
-            del_sql = f"DELETE FROM `{table_name}` where `date` = '{date}'"
+            _date = date.strftime("%Y-%m-%d")
+            del_sql = f"DELETE FROM `{table_name}` where `date` = '{_date}'"
             mdb.executeSql(del_sql)
             cols_type = None
         else:
@@ -59,7 +60,7 @@ def prepare(date):
         logging.error(f"indicators_data_daily_job.prepare处理异常：{e}")
 
 
-def run_check(stocks, date=None, workers=128):
+def run_check(stocks, date=None, workers=1):
     data = {}
     columns = list(tbs.STOCK_STATS_DATA['columns'])
     columns.insert(0, 'code')
