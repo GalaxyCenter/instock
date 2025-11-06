@@ -11,6 +11,7 @@ import pandas as pd
 import requests
 from py_mini_racer import MiniRacer
 from instock.core.crawling.stock_hist_em import redis_cache
+from instock.core.singleton_proxy import proxys
 
 hk_js_decode = """
 function d(t) {
@@ -311,7 +312,7 @@ def tool_trade_date_hist_sina() -> pd.DataFrame:
     :rtype: pandas.DataFrame
     """
     url = "https://finance.sina.com.cn/realstock/company/klc_td_sh.txt"
-    r = requests.get(url)
+    r = requests.get(url, proxies = proxys().get_proxies())
     js_code = MiniRacer()
     js_code.eval(hk_js_decode)
     dict_list = js_code.call(

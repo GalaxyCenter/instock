@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 import re
 import numpy as np
+from instock.core.singleton_proxy import proxys
 
 from instock.core.crawling.stock_hist_em import redis_cache
 
@@ -25,7 +26,7 @@ def stock_limitup_reason(date: str = "2025-02-27") -> pd.DataFrame:
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 Thx"
     }
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, proxies = proxys().get_proxies(), headers=headers)
     data_json = r.json()
 
     data = data_json["data"]
@@ -100,7 +101,7 @@ def stock_limitup_detail(row):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
     }
     time.sleep(0.5)
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, proxies = proxys().get_proxies(), headers=headers)
     data_text = r.text
 
     # match_title = re.search(r"var title = '(.*?)';", data_text)

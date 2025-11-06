@@ -7,6 +7,8 @@ import time
 import pandas as pd
 import requests
 import instock.core.tablestructure as tbs
+from instock.core.singleton_proxy import proxys
+
 
 __author__ = 'myh '
 __date__ = '2023/5/9 '
@@ -37,7 +39,8 @@ def stock_selection() -> pd.DataFrame:
         "source": "SELECT_SECURITIES",
         "client": "WEB"
     }
-    r = requests.get(url, params=params)
+
+    r = requests.get(url, proxies = proxys().get_proxies(), params=params)
     data_json = r.json()
     data = data_json["result"]["data"]
     if not data:
@@ -49,7 +52,7 @@ def stock_selection() -> pd.DataFrame:
         page_current = page_current + 1
         params["p"] = page_current
         time.sleep(0.3)
-        r = requests.get(url, params=params)
+        r = requests.get(url, proxies = proxys().get_proxies(), params=params)
         data_json = r.json()
         _data = data_json["result"]["data"]
         data.extend(_data)
@@ -84,17 +87,18 @@ def stock_selection_params():
         "type": "RPTA_PCNEW_WHOLE",
         "sty": "ALL",
         "p": 1,
-        "ps": 50000,
+        "ps": 1000,
         "source": "SELECT_SECURITIES",
         "client": "WEB"
     }
 
-    r = requests.get(url, params=params)
+    r = requests.get(url, proxies = proxys().get_proxies(), params=params)
     data_json = r.json()
-    zxzb = data_json["zxzb"]  # 指标
+    zxzb = data_json["result"]["data"]  # 指标
     print(zxzb)
 
 
 if __name__ == "__main__":
     stock_selection_df = stock_selection()
     print(stock_selection)
+    # stock_selection_params()
